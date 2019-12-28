@@ -3,6 +3,7 @@
 
 #include "Hash.h"
 #include "Tester.h"
+#include <stdlib.h>
 
 
 void pruebasHash();
@@ -14,5 +15,7 @@ bool DadoUnHashVacio_CuandoSeAgregaUnElemento_EstaEnElArbol();
 bool DadoUnHashConElementos_CuandoSeAgregaUnElemento_ElElementoBuscadoEsElMismo();
 
 bool DadoUnHashConElemento_CuandoSeBorraUnElemento_EsteYaNoEstaEnElArbol();
+
+bool DadoUnHashConElementos_CuandoSeLlenaUnaLista_SonIguales();
 
 #endif /* SRC_PRUEBASHASH_H_ */

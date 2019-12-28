@@ -15,14 +15,24 @@ template <class T> class ABB{
 	private:
 
 		NodoABB<T> * raiz;
+		bool (*comparador)(T izquierda, T derecha);
 
 	public:
 
 		/*
 		 * Pre:
-		 * Post: Crea un arbol sin hijos
+		 * Post: Crea un arbol sin hijos y con una
+		 * 		 funcion comparador por defecto
 		 */
 		ABB();
+
+		/*
+		 * Pre: La funcion comparador devuelve true si
+		 * 		 un elemento izquierda < derecha
+		 * Post: Crea un arbol sin hijos y con una
+		 * 		 funcion comparador pasada por parametro
+		 */
+		ABB(bool (*comparador)(T izquierda, T derecha));
 
 
 		/*
@@ -95,6 +105,7 @@ template <class T> class ABB{
 
 	private:
 
+
 		/*
 		 * Pre:
 		 * Post: Imprime el arbol que tiene al nodo como raiz
@@ -102,6 +113,10 @@ template <class T> class ABB{
 		void imprimir(NodoABB<T> * nodo, int contador);
 
 
+		/*
+		 * Pre:
+		 * Post: Devuelve el nodo anterior al elemento a agregar
+		 */
 		NodoABB<T> * buscarAnteriorAAgregar(T elemento);
 
 		/*
@@ -154,9 +169,16 @@ template <class T> class ABB{
 		 */
 		void borrar(NodoABB<T> * aBorrar, NodoABB<T> * padre);
 
-
+		/*
+		 * Pre:
+		 * Post: Devuelve el padre del elemento
+		 */
 		NodoABB<T> * obtenerPadre(T elemento);
 
+		/*
+		 * Pre:
+		 * Post: Devuelve el hijo del padre
+		 */
 		NodoABB<T> * obtenerHijoDe(NodoABB<T> * padre,T elemento);
 
 		/*
@@ -184,6 +206,10 @@ template <class T> class ABB{
 		 */
 		NodoABB<T> * encontrarMayorDeLosMenores(NodoABB<T> * padre);
 
+		/*
+		 * Pre:
+		 * Post: Encuentra el padre del mayor de los menores
+		 */
 		NodoABB<T> * encontrarPadreMayorDeLosMenores(NodoABB<T> * padre);
 
 		/*
@@ -195,6 +221,12 @@ template <class T> class ABB{
 
 };
 
+/*
+ * Pre:
+ * Post: Devuelve true si izquierda < derecha
+ */
+template <class T>
+bool comparadorABBPorDefecto(T izquierda, T derecha);
 
 
 template <class T>
@@ -202,8 +234,27 @@ ABB<T>::ABB(){
 
 
 	this->raiz = NULL;
+	this->comparador = comparadorABBPorDefecto;
 
 }
+
+
+template <class T>
+ABB<T>::ABB(bool (*comparador)(T izquierda, T derecha)){
+
+
+	this->raiz = NULL;
+	this->comparador = comparador;
+
+}
+
+template <class T>
+bool comparadorABBPorDefecto(T izquierda, T derecha){
+
+	return izquierda < derecha;
+
+}
+
 
 
 template <class T>
@@ -220,11 +271,11 @@ void ABB<T>::agregar(T elemento){
 
 		NodoABB<T> * anterior = this->buscarAnteriorAAgregar(elemento);
 
-		if(elemento > anterior->obtenerDato()){
+		if(this->comparador(anterior->obtenerDato(), elemento)){
 
 			anterior->cambiarDerecha(aAgregar);
 
-		}else if(elemento < anterior->obtenerDato()){
+		}else if(this->comparador(elemento, anterior->obtenerDato())){
 
 			anterior->cambiarIzquierda(aAgregar);
 
@@ -243,17 +294,15 @@ NodoABB<T> * ABB<T>::buscarAnteriorAAgregar(T elemento){
 
 		anterior = actual;
 
-		if(elemento > actual->obtenerDato()){
+		if(this->comparador(actual->obtenerDato(), elemento)){
 
 			actual = actual->obtenerDerecha();
 
-		}else if(elemento < actual->obtenerDato()){
+		}else if(this->comparador(elemento, actual->obtenerDato())){
 
 			actual = actual->obtenerIzquierda();
 
-		}
-
-		else if(elemento == actual->obtenerDato()){
+		}else{
 
 			throw std::string("El elemento ya esta en el arbol");
 
@@ -265,27 +314,6 @@ NodoABB<T> * ABB<T>::buscarAnteriorAAgregar(T elemento){
 
 }
 
-//TODO ERROR
-
-template <class T>
-void ABB<T>::agregar(NodoABB<T> * & nodo, T elemento){
-
-
-	if(nodo == NULL){
-
-		nodo = new NodoABB<T>(elemento);
-
-	}else if(elemento > nodo->obtenerDato()){
-
-		this->agregar(nodo->obtenerDerecha(), elemento);
-
-	}else if(elemento < nodo->obtenerDato()){
-
-		this->agregar(nodo->obtenerIzquierda(), elemento);
-
-	}
-
-}
 
 template <class T>
 bool ABB<T>::esta(T elemento){
@@ -303,11 +331,11 @@ bool ABB<T>::esta(NodoABB<T> * nodo, T elemento){
 
 		return false;
 
-	}else if(elemento > nodo->obtenerDato()){
+	}else if(this->comparador(nodo->obtenerDato(), elemento)){
 
 		return this->esta(nodo->obtenerDerecha(), elemento);
 
-	}else if(elemento < nodo->obtenerDato()){
+	}else if(this->comparador(elemento, nodo->obtenerDato())){
 
 		return this->esta(nodo->obtenerIzquierda(), elemento);
 
@@ -445,11 +473,11 @@ NodoABB<T> * ABB<T>::buscar(NodoABB<T> * nodo, T elemento){
 
 		throw std::string("No se encuentra el elemento");
 
-	}else if(elemento > nodo->obtenerDato()){
+	}else if(this->comparador(nodo->obtenerDato(), elemento)){
 
 		return this->buscar(nodo->obtenerDerecha(), elemento);
 
-	}else if(elemento < nodo->obtenerDato()){
+	}else if(this->comparador(elemento, nodo->obtenerDato())){
 
 		return this->buscar(nodo->obtenerIzquierda(), elemento);
 
@@ -488,24 +516,21 @@ NodoABB<T> * ABB<T>::obtenerPadre(T elemento){
 
 	while(hijo != NULL){
 
-		if(elemento == hijo->obtenerDato()){
 
-			return padre;
+		if(this->comparador(hijo->obtenerDato(), elemento)){
 
-		}
-
-		padre = hijo;
-
-		if(elemento > hijo->obtenerDato()){
-
+			padre = hijo;
 			hijo = hijo->obtenerDerecha();
 
-		}else if(elemento < hijo->obtenerDato()){
+		}else if(this->comparador(elemento, hijo->obtenerDato())){
 
+			padre = hijo;
 			hijo = hijo->obtenerIzquierda();
 
-		}
+		}else{
 
+			return padre;
+		}
 
 	}
 
@@ -520,7 +545,7 @@ NodoABB<T> * ABB<T>::obtenerHijoDe(NodoABB<T> * padre,T elemento){
 
 		return this->raiz;
 
-	}else if(elemento > padre->obtenerDato()){
+	}else if(this->comparador(padre->obtenerDato(), elemento)){
 
 		return padre->obtenerDerecha();
 

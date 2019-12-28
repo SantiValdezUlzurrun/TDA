@@ -6,14 +6,9 @@
 
 int main(){
 
-	//Pruebas Arbol
-	/*
+	//pruebasArbol();
 
-	pruebasArbol();
-
-	*/
 	pruebasHash();
-
 
 
 	return 0;

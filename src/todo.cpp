@@ -3,13 +3,12 @@
  *
  * TODO:
  *
- *	-Mejorar Hash
- *	-Hacer Pruebas de Hash
+ *	-Mejorar Hash // REHASH
  *	-Implementar Heap
  *	-implementar ColaDePrioridad
  *	-Implementar Vector
- *  -Implementar Diccionario
  *	-Implementar Grafo
+ *  -Implementar Diccionario
  *	-Implementar AVL
  *	-Implementar B+
  *
